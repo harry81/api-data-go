@@ -10,7 +10,7 @@ def list_of_api(query=None, countPerPage=100):
 
     # ALL, DATA, OPENAPI, DATAGRID
     params = {
-        "index": "ALL",
+        "index": "DATA",
         "query": query,
         "currentPage": 1,
         "countPerPage": countPerPage,
@@ -23,24 +23,24 @@ def list_of_api(query=None, countPerPage=100):
     for ele in tree.xpath("//div[contains(@class, 'data-item')]"):
         api = {}
         category = ele.xpath("span[contains(@class, 'visible-desktop')]/text()")[0]
-        api["category"] = category.strip()
+        api["category"] = category.strip().encode('utf-8')
 
         title = ele.xpath("div[contains(@class, 'data-title')]/a/text()")[0]
-        api["title"] = title.strip()
+        api["title"] = title.strip().encode('utf-8')
 
         read = ele.xpath("div[contains(@class, 'data-title')]/span/text()")[0]
         read = re.search('([0-9])+', read).group()
-        api["read"] = read.strip()
+        api["read"] = read.strip().encode('utf-8')
 
         download = ele.xpath("div[contains(@class, 'data-title')]/span/text()")[1]
         try:
             download = re.search('([0-9])+', download).group()
-            api["download"] = download.strip()
+            api["download"] = download.strip().encode('utf-8')
         except Exception as e:
             api["download"] = '0'
 
         desc = ele.xpath("div[contains(@class, 'data-desc')]/text()")[0]
-        api["desc"] = desc.strip()
+        api["desc"] = desc.strip().encode('utf-8')
 
         resp.append(api)
 
@@ -48,15 +48,17 @@ def list_of_api(query=None, countPerPage=100):
 
 
 def main():
-    apis = list_of_api()
+    apis = list_of_api(countPerPage=30)
     cnt = 0
 
     with open('open-api.csv', 'wb') as csvfile:
+        # apiwriter = csv.writer(csvfile, delimiter=',', quotechar='\"')
+        fieldnames = ['category', 'read', 'download', 'title', 'desc']
+        apiwriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        apiwriter.writeheader()
         for api in apis:
-            apiwriter = csv.writer(csvfile, delimiter=',', quotechar='|')
-            apiwriter.writerow([api[k].encode('utf8') for k in api])
-            # print "%4d [%s %s] %s - %s" % (
-            #     cnt, api['read'], api['download'], api['title'], api['desc'])
+            # apiwriter.writerow([api[k].encode('utf8') for k in api])
+            apiwriter.writerow(api)
             cnt += 1
 
 
