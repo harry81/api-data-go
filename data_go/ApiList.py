@@ -14,7 +14,7 @@ params = {
 }
 
 
-def list_of_api(url):
+def list_of_api(url=url):
     response = requests.get(url, params=params)
     tree = etree.HTML(response.content)
     resp = []
