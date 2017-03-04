@@ -4,17 +4,18 @@ import requests
 import csv
 from lxml import etree
 
-url = 'https://www.data.go.kr/search/index.do'
-# ALL, DATA, OPENAPI, DATAGRID
-params = {
-    "index": "ALL",
-    # "query": u"상가",
-    "currentPage": 1,
-    "countPerPage": 100,
-}
 
+def list_of_api(query=None, countPerPage=100):
+    url = 'https://www.data.go.kr/search/index.do'
 
-def list_of_api(url=url):
+    # ALL, DATA, OPENAPI, DATAGRID
+    params = {
+        "index": "ALL",
+        "query": query,
+        "currentPage": 1,
+        "countPerPage": countPerPage,
+    }
+
     response = requests.get(url, params=params)
     tree = etree.HTML(response.content)
     resp = []
@@ -36,7 +37,6 @@ def list_of_api(url=url):
             download = re.search('([0-9])+', download).group()
             api["download"] = download.strip()
         except Exception as e:
-            print e
             api["download"] = '0'
 
         desc = ele.xpath("div[contains(@class, 'data-desc')]/text()")[0]
@@ -48,7 +48,7 @@ def list_of_api(url=url):
 
 
 def main():
-    apis = list_of_api(url)
+    apis = list_of_api()
     cnt = 0
 
     with open('open-api.csv', 'wb') as csvfile:
