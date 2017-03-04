@@ -17,7 +17,7 @@ version = get_version('data_go')
 setup(
     name='api-data-go',
     version=version,
-    url='http://www.django-rest-framework.org',
+    url='https://github.com/harry81/api-data-go',
     license='BSD',
     description='Get a list of APIs on www.data.go.kr',
     author='Hyunmin',
